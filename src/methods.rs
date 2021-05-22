@@ -1,3 +1,13 @@
+//! This module contains all available methods to use the Bot API</br>
+//! To get started, you first have to create a bot
+//! ```ignore
+//! let bot = Bot::new("your_bot_api_key".to_json());
+//! ```
+//! Afterwards you can use the bot, e.g.:
+//! ```ignore
+//! bot.get_me();
+//! ```
+
 extern crate json;
 extern crate rustc_serialize;
 

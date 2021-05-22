@@ -1,3 +1,18 @@
+//! This module contains all available types to use the Bot API</br>
+//! All types have functions to create them from_json
+//! ```ignore
+//! let user = User::from_json(json_data);
+//! ```
+//! or to turn them back into JSON-format
+//! ```ignore
+//! let json_data = user.to_json();
+//! ```
+//! as well as creating empty objects (having all fields filled with default data)
+//! ```ignore
+//! let user = User::empty()
+//! ```
+//! All types can also be displayed and cloned.
+
 extern crate json;
 extern crate rustc_serialize;
 
