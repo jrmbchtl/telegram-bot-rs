@@ -100,7 +100,6 @@ impl Bot {
             parameters, reply_markup_ikm, reply_markup_rkm, reply_markup_rkr, reply_markup_fr
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("sendMessage".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -890,7 +889,6 @@ impl Bot {
             parameters, reply_markup_ikm
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("editMessageText".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -908,7 +906,6 @@ impl Bot {
             parameters, reply_markup_ikm
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("editMessageCaption".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -925,7 +922,6 @@ impl Bot {
             parameters, reply_markup_ikm
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("editMessageMedia".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -942,7 +938,6 @@ impl Bot {
             parameters, reply_markup_ikm
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("editMessageReplyMarkup".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -958,7 +953,6 @@ impl Bot {
             parameters, reply_markup_ikm
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("stopPoll".to_string(), parameters);
         if !res["ok"].as_bool().unwrap() {
             None
@@ -974,7 +968,6 @@ impl Bot {
             parameters, chat_id, message_id
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("deleteMessage".to_string(), parameters);
         expand_make_request_to_bool! {
             res
@@ -996,7 +989,6 @@ impl Bot {
             parameters, reply_markup_ikm, reply_markup_rkm, reply_markup_rkr, reply_markup_fr
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("sendSticker".to_string(), parameters);
         expand_make_request_to_message! {
             res
@@ -1009,7 +1001,6 @@ impl Bot {
             parameters, name
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("getStickerSet".to_string(), parameters);
         if !res["ok"].as_bool().unwrap() {
             None
@@ -1029,7 +1020,6 @@ impl Bot {
             parameters, png_sticker, contains_masks, mask_position
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("createNewStickerSet".to_string(), parameters);
         expand_make_request_to_bool! {
             res
@@ -1046,7 +1036,6 @@ impl Bot {
             parameters, png_sticker, mask_position
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("addStickerToSet".to_string(), parameters);
         expand_make_request_to_bool! {
             res
@@ -1059,7 +1048,6 @@ impl Bot {
             parameters, sticker, position
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("setStickerPositionInSet".to_string(), parameters);
         expand_make_request_to_bool! {
             res
@@ -1072,7 +1060,6 @@ impl Bot {
             parameters, sticker
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("deleteStickerFromSet".to_string(), parameters);
         expand_make_request_to_bool! {
             res
@@ -1088,7 +1075,6 @@ impl Bot {
             parameters, thumb
         }
         parameters.pop();
-        println!("{}", parameters.clone());
         let res = self.send_request("setStickerSetThumb".to_string(), parameters);
         expand_make_request_to_bool! {
             res
