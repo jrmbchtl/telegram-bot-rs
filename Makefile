@@ -16,3 +16,6 @@ clean:
 
 run:
 	nix-shell --command "cargo run --package telegram-api-rs && exit"
+
+publish:
+	nix-shell --command "cargo publish && exit"
