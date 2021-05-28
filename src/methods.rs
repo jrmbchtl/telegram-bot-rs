@@ -60,9 +60,7 @@ impl Bot {
 
     fn send_request(&self, method: String, parameters: String) -> JsonValue {
         let request = format!("{}{}/{}?{}", BASE_URL, self.key, method, parameters);
-        println!("{}", request);
         let res = reqwest::blocking::get(request);
-        println!("{:?}", res);
         let mut json_response = JsonValue::Null;
         match res {
             Ok(r) => {
@@ -73,7 +71,6 @@ impl Bot {
             }
             Err(_) => ()
         }
-        println!("{:?}", json_response);
         json_response
     }
 
@@ -95,7 +92,6 @@ impl Bot {
         parameters.pop();
         let res = self.send_request("getUpdates".to_string(), parameters);
         let ret: Vec<Update> = Custom::from_json(res["result"].clone());
-        println!("{}", res);
         if !res["ok"].as_bool().unwrap() || ret.len() == 0 {
             None
         } else {
