@@ -114,6 +114,7 @@ pub(crate) trait Custom {
     fn to_json(v: Self) -> JsonValue;
     fn push(j: Vec<String>, v: Self, name: &'static str) -> Vec<String>;
     fn default() -> Self;
+    fn url_encode(v: Self) -> String;
 }
 
 expand_custom_direct_i! {
@@ -218,6 +219,10 @@ expand_custom_option! {
     impl Custom for Option<CallbackQuery> (as_callback_query, unwrap, None)
     impl Custom for Option<PollAnswer> (as_poll_answer, unwrap, None)
     impl Custom for Option<ChatMemberUpdated> (as_chat_member_updated, unwrap, None)
+}
+
+expand_custom_box! {
+    impl Custom for Box<Chat> (as_box_chat, unwrap, Box::new(Chat::empty()))
 }
 
 expand_custom_option_box! {
@@ -479,8 +484,8 @@ pub struct Message {
     pub message_id: i32,
     pub from: Option<User>,
     pub sender_chat: Option<Box<Chat>>,
-    pub date: Option<i32>,
-    pub chat: Option<Box<Chat>>,
+    pub date: i32,
+    pub chat: Box<Chat>,
     pub forward_from: Option<User>,
     pub forward_from_chat: Option<Box<Chat>>,
     pub forward_from_message_id: Option<i32>,
@@ -1374,7 +1379,7 @@ mod tests {
 
     #[test]
     fn test_callback_query() {
-        let reference = r#"{"id":"1234","from":{"id":1234,"is_bot":true,"first_name":"itsme"},"message":{"message_id":10}}"#;
+        let reference = r#"{"id":"1234","from":{"id":1234,"is_bot":true,"first_name":"itsme"},"message":{"message_id":10,"date":5,"chat":{"id":12,"type":"private"}}}"#;
         expand_basic_test!{
             fn run_test(CallbackQuery, reference)
         }
@@ -1398,7 +1403,7 @@ mod tests {
 
     #[test]
     fn test_chat() {
-        let reference = r#"{"id":1,"type":"private","photo":{"small_file_id":"1","small_file_unique_id":"1234","big_file_id":"2","big_file_unique_id":"2345"},"pinned_message":{"message_id":23},"permissions":{"can_send_messages":true},"location":{"location":{"longitude":49.1,"latitude":10.2},"address":"here"}}"#;
+        let reference = r#"{"id":1,"type":"private","photo":{"small_file_id":"1","small_file_unique_id":"1234","big_file_id":"2","big_file_unique_id":"2345"},"pinned_message":{"message_id":10,"date":5,"chat":{"id":12,"type":"private"}},"permissions":{"can_send_messages":true},"location":{"location":{"longitude":49.1,"latitude":10.2},"address":"here"}}"#;
         expand_basic_test!{
             fn run_test(Chat, reference)
         }
@@ -1406,7 +1411,7 @@ mod tests {
 
     #[test]
     fn test_message() {
-        let reference = r#"{"message_id":32,"from":{"id":1234,"is_bot":true,"first_name":"itsme"},"sender_chat":{"id":12345,"type":"group"},"reply_to_message":{"message_id":12}}"#;
+        let reference = r#"{"message_id":32,"from":{"id":1234,"is_bot":true,"first_name":"itsme"},"sender_chat":{"id":12345,"type":"group"},"date":5,"chat":{"id":12,"type":"private"},"reply_to_message":{"message_id":10,"date":5,"chat":{"id":12,"type":"private"}}}"#;
         expand_basic_test!{
             fn run_test(Message, reference)
         }
@@ -1414,7 +1419,7 @@ mod tests {
 
     #[test]
     fn test_update() {
-        let reference = r#"{"update_id":10,"message":{"message_id":12},"poll_answer":{"poll_id":"test","user":{"id":13,"is_bot":false,"first_name":"user"},"option_ids":[0,1,2]}}"#;
+        let reference = r#"{"update_id":10,"message":{"message_id":10,"date":5,"chat":{"id":12,"type":"private"}},"poll_answer":{"poll_id":"test","user":{"id":13,"is_bot":false,"first_name":"user"},"option_ids":[0,1,2]}}"#;
         expand_basic_test!{
             fn run_test(Update, reference)
         }

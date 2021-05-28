@@ -1,6 +1,6 @@
 [package]
 name = "telegram-api-rs"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["jrmbchtl"]
 edition = "2018"
 description = "Telegram API written in RUST"
@@ -17,4 +17,5 @@ jobs = 8
 [dependencies]
 reqwest =  { version = "0.11.2", features = ["blocking"] }
 json = "0.12.4"
+urlencoding = "1.3.3"
 rustc-serialize = "0.3"

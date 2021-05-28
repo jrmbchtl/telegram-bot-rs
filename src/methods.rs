@@ -10,10 +10,13 @@
 
 extern crate json;
 extern crate rustc_serialize;
+extern crate urlencoding;
 
 use json::JsonValue;
 use crate::*;
 use crate::objects::*;
+use std::sync::mpsc::Sender;
+use std::thread;
 
 pub struct Bot {
     key: String,
@@ -23,15 +26,41 @@ pub struct Bot {
 const BASE_URL: &str = "https://api.telegram.org/bot";
 
 impl Bot {
-    pub fn new(api_key: String) -> Bot {
+    pub fn new<'a>(api_key: String) -> Bot {
         Bot {
             key: api_key,
             offset: 0,
         }
     }
 
+    /// start_polling is used to get updates from the bot.
+    /// ```ignore
+    /// let (tx, rx) = mpsc::channel();
+    /// bot.start_polling(tx);
+    /// let received = rx.recv().unwrap();
+    /// println!("Got: {}", received);
+    /// ```
+
+    pub fn start_polling(&mut self, tx: Sender<Update>) {
+        let mut bot = self.clone();
+        thread::spawn(move || {
+            loop {
+                let updates = bot.get_updates(None, None, None);
+                match updates {
+                    Some(us) => {
+                        for u in us {
+                            assert!(tx.send(u).is_ok());
+                        }
+                    },
+                    None => ()
+                };
+            }
+        });
+    }
+
     fn send_request(&self, method: String, parameters: String) -> JsonValue {
         let request = format!("{}{}/{}?{}", BASE_URL, self.key, method, parameters);
+        // println!("{}", request);
         let res = reqwest::blocking::get(request);
         let mut json_response = JsonValue::Null;
         match res {
@@ -1078,6 +1107,15 @@ impl Bot {
         let res = self.send_request("setStickerSetThumb".to_string(), parameters);
         expand_make_request_to_bool! {
             res
+        }
+    }
+}
+
+impl Clone for Bot {
+    fn clone(&self) -> Self {
+        Bot {
+            key: self.key.clone(),
+            offset: self.offset
         }
     }
 }

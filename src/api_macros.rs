@@ -154,6 +154,15 @@ macro_rules! custom_default {
 }
 
 #[macro_export]
+macro_rules! custom_url_encode {
+    (fn url_encode(v: Self)) => {
+        fn url_encode(v: Self) -> String {
+            urlencoding::encode(&*format!("{}",Custom::to_json(v)))
+        }
+    }
+}
+
+#[macro_export]
 macro_rules! expand_custom {
     ($(impl Custom for $fname:ident ($func:ident, $extract:ident, $default:expr))*) => {
         $(impl Custom for $fname {
@@ -172,6 +181,9 @@ macro_rules! expand_custom {
             }
             custom_default! {
                 fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
             }
         })*
     }
@@ -197,6 +209,9 @@ macro_rules! expand_custom_direct_i {
             custom_default! {
                 fn default($default)
             }
+            custom_url_encode! {
+                fn url_encode(v: Self)
+            }
         })*
     }
 }
@@ -221,6 +236,9 @@ macro_rules! expand_custom_direct_bool {
             custom_default! {
                 fn default($default)
             }
+            custom_url_encode! {
+                fn url_encode(v: Self)
+            }
         })*
     }
 }
@@ -244,6 +262,9 @@ macro_rules! expand_custom_direct_object {
             }
             custom_default! {
                 fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
             }
         })*
     }
@@ -271,6 +292,9 @@ macro_rules! expand_custom_vec {
             custom_default! {
                 fn default($default)
             }
+            custom_url_encode! {
+                fn url_encode(v: Self)
+            }
         })*
     }
 }
@@ -296,6 +320,9 @@ macro_rules! expand_custom_vec_vec {
             }
             custom_default! {
                 fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
             }
         })*
     }
@@ -330,6 +357,38 @@ macro_rules! expand_custom_option {
             custom_default! {
                 fn default($default)
             }
+            custom_url_encode! {
+                fn url_encode(v: Self)
+            }
+        })*
+    }
+}
+
+#[macro_export]
+macro_rules! expand_custom_box {
+    ($(impl Custom for Box<$fname:ident> ($func:ident, $extract:ident, $default: expr))*) => {
+        $(impl Custom for Box<$fname> {
+            fn from_json(s: JsonValue) -> Box<$fname> {
+                if s.is_empty() && s.as_bool() != Some(false) { Box::new($fname::empty()) }
+                else {s.$func().$extract()}
+            }
+            fn create_json(mut j: JsonValue, v: Self, name: &'static str) -> JsonValue {
+                j.insert(name, *v).ok();
+                j
+            }
+            fn to_json(v: Self)  -> JsonValue {
+                JsonValue::String(format!("{}", *v))
+            }
+            fn push(mut data: Vec<String>, v: Self, name: &'static str) -> Vec<String> {
+                data.push(format!("{}: {}", name, *v));
+                data
+            }
+            custom_default! {
+                fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
+            }
         })*
     }
 }
@@ -362,6 +421,9 @@ macro_rules! expand_custom_option_box {
             }
             custom_default! {
                 fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
             }
         })*
     }
@@ -400,6 +462,9 @@ macro_rules! expand_custom_option_vec {
             }
             custom_default! {
                 fn default($default)
+            }
+            custom_url_encode! {
+                fn url_encode(v: Self)
             }
         })*
     }
@@ -501,7 +566,7 @@ macro_rules! expand_basic_test {
 #[macro_export]
 macro_rules! expand_parameters_into_string {
     ($parameters:ident, $($vname: ident), *) => {
-        $($ parameters.push_str(&*format!("{}={}&", stringify!($vname), Custom::to_json($vname))));*
+        $($ parameters.push_str(&*format!("{}={}&", stringify!($vname), Custom::url_encode($vname))));*
     }
 }
 
@@ -511,9 +576,9 @@ macro_rules! expand_parameters_opt_into_string {
         $(match $vname {
             Some(v) => {
                 if stringify!($vname) == "typ" {
-                    $parameters.push_str(&*format!("typ={}&", Custom::to_json(v)))
+                    $parameters.push_str(&*format!("typ={}&", Custom::url_encode(v)))
                 } else {
-                    $parameters.push_str(&*format!("{}={}&", stringify!($vname), Custom::to_json(v)))
+                    $parameters.push_str(&*format!("{}={}&", stringify!($vname),Custom::url_encode(v)))
                 }},
             None => ()
         });*
@@ -523,7 +588,7 @@ macro_rules! expand_parameters_opt_into_string {
 #[macro_export]
 macro_rules! expand_parameters_reply_markup_into_string {
     ($parameters:ident, $($vname: ident), *) => {
-        $(match $vname { Some(v) => $parameters.push_str(&*format!("reply_markup={}&", Custom::to_json(v))), None => () });*
+        $(match $vname { Some(v) => $parameters.push_str(&*format!("reply_markup={}&", Custom::url_encode(v))), None => () });*
     }
 }
 
