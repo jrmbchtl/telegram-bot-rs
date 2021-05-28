@@ -93,6 +93,7 @@ impl Bot {
         parameters.pop();
         let res = self.send_request("getUpdates".to_string(), parameters);
         let ret: Vec<Update> = Custom::from_json(res["result"].clone());
+        println!("{}", res);
         if !res["ok"].as_bool().unwrap() || ret.len() == 0 {
             None
         } else {
