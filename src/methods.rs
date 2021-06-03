@@ -60,6 +60,7 @@ impl Bot {
 
     fn send_request(&self, method: String, parameters: String) -> JsonValue {
         let request = format!("{}{}/{}?{}", BASE_URL, self.key, method, parameters);
+        // println!("{}", request);
         let res = reqwest::blocking::get(request);
         let mut json_response = JsonValue::Null;
         match res {
